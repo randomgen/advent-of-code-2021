@@ -1,5 +1,4 @@
 import collections
-import fileinput
 import itertools
 import sys
 
@@ -37,11 +36,11 @@ def part2(commands):
     return 0
 
 
-def main():
-    data = map(convert, fileinput.input())
+def main(input_stream):
+    data = map(convert, input_stream)
     data1, data2 = itertools.tee(data, 2)
     return part1(data1) or part2(data2)
 
 
 if __name__ == '__main__':
-    sys.exit(main())
+    sys.exit(main(sys.stdin))
