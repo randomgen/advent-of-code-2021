@@ -34,7 +34,6 @@ def to_binary_str(lst):
 def find_rating(report, bit, func):
     if len(report) == 0:
         return None
-    
     if len(report) == 1:
         return int(to_binary_str(report[0]), base=2)
 

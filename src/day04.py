@@ -23,12 +23,18 @@ class Bingo:
         return self.numbers[self.board_slice(i)]
 
     def board_slice(self, i):
-        return slice(i * self.BOARD_SIZE, i * self.BOARD_SIZE + self.BOARD_SIZE)
+        start = i * self.BOARD_SIZE
+        return slice(start, start + self.BOARD_SIZE)
 
     def columns(self):
         for i in range(0, len(self.numbers), self.BOARD_SIZE):
             for j in range(i, i + self.LINE_SIZE):
                 yield self.numbers[j:j + self.BOARD_SIZE:self.LINE_SIZE]
+
+    def completed_lines(self, lines):
+        return [
+            i for i, line in enumerate(lines) if self.is_line_complete(line)
+        ]
 
     def mark(self, draw):
         for i, v in enumerate(self.numbers):
@@ -43,8 +49,8 @@ class Bingo:
             yield self.numbers[i:i + self.LINE_SIZE]
 
     def winners(self):
-        completed_rows = [i for i, line in enumerate(self.rows()) if self.is_line_complete(line)]
-        completed_cols = [i for i, line in enumerate(self.columns()) if self.is_line_complete(line)]
+        completed_rows = self.completed_lines(self.rows())
+        completed_cols = self.completed_lines(self.columns())
         completed = chain(completed_rows, completed_cols)
         boards = map(lambda i: int(i / self.LINE_SIZE), completed)
         return set(boards)
