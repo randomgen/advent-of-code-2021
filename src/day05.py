@@ -9,8 +9,11 @@ class Point:
         self.x = x
         self.y = y
 
-    def __repr__(self) -> str:
+    def __str__(self) -> str:
         return f"({self.x}, {self.y})"
+
+    def __eq__(self, other) -> bool:
+        return self.x == other.x and self.y == other.y
 
 
 class Line:
@@ -19,11 +22,18 @@ class Line:
         self.end = end
 
     def __iter__(self) -> Iterable[Point]:
-        step = Point(1 if self.end.x - self.start.x >= 0 else -1,
-                     1 if self.end.y - self.start.y >= 0 else -1)
-        for x in range(self.start.x, self.end.x + step.x, step.x):
-            for y in range(self.start.y, self.end.y + step.y, step.y):
-                yield Point(x, y)
+        step = Point(cmp(self.start.x, self.end.x),
+                     cmp(self.start.y, self.end.y))
+        current = self.start
+        while True:
+            yield current
+            if current == self.end:
+                break
+            current = Point(current.x + step.x, current.y + step.y)
+
+
+def cmp(a: int, b: int) -> int:
+    return 1 if a < b else -1 if a > b else 0
 
 
 def convert(line: str) -> Tuple[Point, Point]:
@@ -51,11 +61,12 @@ def count_if(func: Callable[[Any], bool], iterable: Iterable[Any]) -> int:
     return count
 
 
-def part1(data):
+def part1(data, ignore_diagonal=True):
     GRID = Point(1000, 1000)
     diagram = [[0 for y in range(GRID.y)] for x in range(GRID.x)]
     lines = [Line(start, end) for start, end in data]
-    lines = [line for line in lines if not is_diagonal(line)]
+    if ignore_diagonal:
+        lines = [line for line in lines if not is_diagonal(line)]
     for line in lines:
         for point in line:
             diagram[point.x][point.y] += 1
@@ -66,7 +77,7 @@ def part1(data):
 
 
 def part2(data):
-    return 0
+    return part1(data, ignore_diagonal=False)
 
 
 def main(input_stream):
